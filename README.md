@@ -8,7 +8,7 @@ Its purpose is to prove, over `ℝ` and in TauCeti's vocabulary (`TauCeti.IsSemi
 |---|---|---|---|
 | A1 | Tarski–Seidenberg, projection form | `image_comp_inl` (`Semialgebraic/Interface/Projection.lean`) | done (from TauCeti's CAD) |
 | A2 | finiteness theorem for closed semialgebraic sets | `exists_eq_iUnion_iInter_nonneg` | planned |
-| A3 | polynomial growth of locally bounded semialgebraic functions | `growth` | planned |
+| A3 | polynomial growth of locally bounded semialgebraic functions | `growth` (`Semialgebraic/Interface/Growth.lean`) | done |
 
 The plan and its status are in `PLAN.md`.
 

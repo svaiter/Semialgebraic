@@ -175,7 +175,7 @@ orchestrator runs the full build and `scripts/check.sh` between waves, then comm
 |---|---|---|
 | 0 setup | done | caches hit; smoke test built |
 | 1 A1 | done | `Semialgebraic.Interface.image_comp_inl`, axioms clean |
-| 2 A3 | not started | |
-| 3a A2 research | not started | |
+| 2 A3 | done | `Semialgebraic.Interface.growth` (`Interface/Growth.lean`), from `exists_polynomial_growth` (`Growth/Main.lean`); units P2-a, P2-b, P2-c audited ACCEPT; axioms clean |
+| 3a A2 research | in progress | research agents R1 (Łojasiewicz route), R2 (CAD/Thom and other routes) |
 | 3b A2 implementation | not started | |
 | 4 integration | not started | |

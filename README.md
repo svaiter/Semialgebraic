@@ -10,7 +10,14 @@ Its purpose is to prove, over `ℝ` and in TauCeti's vocabulary (`TauCeti.IsSemi
 | A2 | finiteness theorem for closed semialgebraic sets | `exists_eq_iUnion_iInter_nonneg` (`Semialgebraic/Interface/Finiteness.lean`) | done |
 | A3 | polynomial growth of locally bounded semialgebraic functions | `growth` (`Semialgebraic/Interface/Growth.lean`) | done |
 
-The plan and its status are in `PLAN.md`.
+Beyond the interface theorems, the library provides general statements: the finiteness theorem for open and closed
+semialgebraic sets (`Semialgebraic.exists_eq_iUnion_iInter_pos`, `Semialgebraic.exists_eq_iUnion_iInter_nonneg`), a
+Łojasiewicz inequality with polynomial weight on closed semialgebraic sets (`Semialgebraic.exists_lojasiewicz`), and
+polynomial growth of semialgebraic functions and of fibrewise suprema (`Semialgebraic.exists_polynomial_growth`,
+`Semialgebraic.exists_growth_isLUB`).
+
+The plan and its status are in `PLAN.md`; the choice of proof route for the finiteness theorem is documented in
+`notes/finiteness-report.md`; `notes/upstream-proposal.md` lists what could be offered to TauCeti.
 
 ## Pins
 

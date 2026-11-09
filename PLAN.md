@@ -178,4 +178,4 @@ orchestrator runs the full build and `scripts/check.sh` between waves, then comm
 | 2 A3 | done | `Semialgebraic.Interface.growth` (`Interface/Growth.lean`), from `exists_polynomial_growth` (`Growth/Main.lean`); units P2-a, P2-b, P2-c audited ACCEPT; axioms clean |
 | 3a A2 research | done | `notes/finiteness-report.md`; research R1, R2 with Opus audits (SOUND; SOUND AFTER CORRECTIONS); route 1 (Łojasiewicz, streamlined) chosen, route 2 (Thom lemma) documented as fallback |
 | 3b A2 implementation | done | `Semialgebraic.Interface.exists_eq_iUnion_iInter_nonneg` (`Interface/Finiteness.lean`), from `exists_lojasiewicz`, `exists_eq_iUnion_iInter_pos` (`Finiteness/*.lean`); units P3-a, P3-b, P3-c audited ACCEPT; axioms clean |
-| 4 integration | in progress | in HardnessBilevel: library `HardnessBilevelUnconditional` |
+| 4 integration | done | in HardnessBilevel (branch `claude/great-planck-pt0s0w`): library `HardnessBilevelUnconditional` with the three proved instances and the assumption-free corollaries; its `scripts/check.sh` passes; all axioms `[propext, Classical.choice, Quot.sound]` |

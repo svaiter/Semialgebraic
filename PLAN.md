@@ -111,7 +111,7 @@ For `ρ ≥ 0` the fibre `E_ρ` is nonempty (`x = 0`) and bounded above (hypothe
 `ρ₁ := max t₀ c`: for `ρ ≥ ρ₁`, `c (1 + ρ)^M ≤ (1 + ρ)^{M+1}`; for `‖x‖² ≤ ρ₁`, `|f x| ≤ B(ρ₁)`. Hence
 `|f x| ≤ max 0 B(ρ₁) + (1 + ‖x‖²)^{M+1}`. No `Real.sSup` is used, so no junk values.
 
-### 4.4 A2 (Phases 3a, 3b) — candidate route, to be confirmed or replaced by the Phase 3a report
+### 4.4 A2 (Phases 3a, 3b) — original candidate route (superseded: the audited route, with four corrections to this sketch, is `notes/finiteness-report.md` §3)
 
 Hörmander-style reduction of the weighted closed Łojasiewicz inequality to one-variable growth:
 
@@ -139,7 +139,7 @@ The alternative route through cylindrical decomposition and Thom encodings is ex
 | 2 | P2-b | `Growth/IsLUB.lean` (G3) | Opus | build, audit ACCEPT |
 | 2 | P2-c (after a, b) | `Growth/Main.lean` (G4, §4.3), `Interface/Growth.lean`, `SemialgebraicCheck/A3.lean` | Opus | axioms of `Interface.growth` clean |
 | 3a | research | `notes/research/*.md`, `notes/audit/*.md`, `notes/finiteness-report.md` | Fable (high) research, Opus (high) audit | audited report with recommendation and risks |
-| 3b | P3-* | `Finiteness/*.lean`, `Interface/Finiteness.lean`, `SemialgebraicCheck/A2.lean` (decomposition fixed by the report) | Opus | axioms of `Interface.exists_eq_iUnion_iInter_nonneg` clean |
+| 3b | P3-a, P3-b, P3-c | `Finiteness/Lojasiewicz.lean`, `Finiteness/Cells.lean`, `Finiteness/Main.lean`, `Interface/Finiteness.lean`, `SemialgebraicCheck/A2.lean` | Opus | axioms of `Interface.exists_eq_iUnion_iInter_nonneg` clean |
 | 4 | integration | in HardnessBilevel: `lakefile.toml`, `HardnessBilevelUnconditional/*`, `scripts/*`, `README.md`, `PLAN.md` | orchestrator + Opus | `scripts/check.sh` passes; unconditional corollaries have clean axioms |
 
 Each Lean unit is audited by a Sonnet auditor; fixes go back to the writer until the verdict is ACCEPT. The
@@ -176,6 +176,6 @@ orchestrator runs the full build and `scripts/check.sh` between waves, then comm
 | 0 setup | done | caches hit; smoke test built |
 | 1 A1 | done | `Semialgebraic.Interface.image_comp_inl`, axioms clean |
 | 2 A3 | done | `Semialgebraic.Interface.growth` (`Interface/Growth.lean`), from `exists_polynomial_growth` (`Growth/Main.lean`); units P2-a, P2-b, P2-c audited ACCEPT; axioms clean |
-| 3a A2 research | in progress | research agents R1 (Łojasiewicz route), R2 (CAD/Thom and other routes) |
-| 3b A2 implementation | not started | |
-| 4 integration | not started | |
+| 3a A2 research | done | `notes/finiteness-report.md`; research R1, R2 with Opus audits (SOUND; SOUND AFTER CORRECTIONS); route 1 (Łojasiewicz, streamlined) chosen, route 2 (Thom lemma) documented as fallback |
+| 3b A2 implementation | done | `Semialgebraic.Interface.exists_eq_iUnion_iInter_nonneg` (`Interface/Finiteness.lean`), from `exists_lojasiewicz`, `exists_eq_iUnion_iInter_pos` (`Finiteness/*.lean`); units P3-a, P3-b, P3-c audited ACCEPT; axioms clean |
+| 4 integration | in progress | in HardnessBilevel: library `HardnessBilevelUnconditional` |

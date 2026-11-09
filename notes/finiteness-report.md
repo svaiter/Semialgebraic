@@ -7,7 +7,7 @@ Orchestrator's consolidation of two research reports and their independent audit
 | `notes/research/route1-lojasiewicz.md` | research agent R1 | the route through the Łojasiewicz inequality |
 | `notes/audit/R1-lojasiewicz.md` | Opus auditor | adversarial audit of R1 — verdict **SOUND** |
 | `notes/research/route2-cad-thom.md` | research agent R2 | cylindrical decomposition, Thom's lemma, other routes |
-| `notes/audit/R2-cad-thom.md` | Opus auditor | adversarial audit of R2 — see §6 |
+| `notes/audit/R2-cad-thom.md` | Opus auditor | adversarial audit of R2 — verdict **SOUND AFTER CORRECTIONS** |
 
 Target (the field of `Bilevel.HasFinitenessTheorem`, in TauCeti's vocabulary):
 
@@ -33,11 +33,11 @@ Route 2 (repaired Thom-lemma route, R2 §4–5, §8) is kept as the documented f
 
 | | route 1, textbook (Schweighofer §6.2–6.3) | route 1, streamlined (chosen) | route 2, as hypothesised | route 2, repaired | real spectrum | induction on dimension |
 |---|---|---|---|---|---|---|
-| correct | yes (re-derived by R1 and by the auditor) | yes (R1, auditor, and a compiling scratch prototype) | **no** (counterexamples) | yes according to R2; audit in §6 | circular in the source checked | no complete argument found |
+| correct | yes (re-derived by R1 and by the auditor) | yes (R1, auditor; now proved in Lean) | **no** (counterexamples) | yes (R2 and its auditor) | circular in the source checked | no complete argument found |
 | needs from TauCeti | projection, sign normal form | projection, sign normal form, empty-interior ⇒ hypersurface (via G1) | — | projection, closure, sign normal form | real spectrum (absent) | `dim (closure S \ S) < dim S` (absent) |
 | needs from Phase 2 | G1/G2 | G4 | — | nothing | — | — |
 | extra infrastructure | calculus of continuous semialgebraic functions (abs, quotient, shrinking map, extension by zero) | none | — | one-variable Thom lemma with relaxed endpoints, closure formula, monic form by a polynomial automorphism, bookkeeping of basic closed sets | large | large |
-| estimated Lean size | 1100–1500 lines | 300–350 lines | — | about 1100 lines (900–1400) | not estimated | not estimated |
+| estimated Lean size | 1100–1500 lines | 300–350 lines | — | about 1300 lines (1100–1600 after audit) | not estimated | not estimated |
 | main risk | size | none mathematical; set-builder and `simp` friction (solved in the prototype) | — | `finSuccEquiv`/`Fin.cons` plumbing, root bounds, union bookkeeping | — | — |
 
 ### 2.1 The hypothesis on cylindrical decomposition is false as stated
@@ -132,9 +132,26 @@ FT′: every closed semialgebraic `K ⊆ ℝ^ι` is `{x | ∃ z ∈ [0, 1/2]^k, 
   for semialgebraic sets, no finiteness theorem, no basic sets — conclusion unchanged); (2) an example in the FT′
   section used the wrong lift (conclusion unchanged); (3) two overstatements about `PLAN.md` §4.4, covered by the
   list of corrections in §3 above.
-* **R2:** audit pending at the time of writing; this section is completed when it arrives. The recommendation does
-  not depend on it: if the repaired Thom route is confirmed it remains three to four times larger than the chosen
-  route, and if it is refuted the fallback is the textbook form of route 1.
+* **R2: SOUND AFTER CORRECTIONS.** No mathematical error. Lemma T, the closure formula (Theorem C), the necessity
+  counterexamples, the monic form, the transport along polynomial automorphisms and the induction were re-derived
+  independently; the counterexamples were checked by hand and by exact rational arithmetic; the inventory of TauCeti
+  (no closure or frontier control of CAD cells, no finiteness theorem, no semialgebraic Łojasiewicz inequality, no
+  real spectrum, no strict dimension drop for frontiers) was confirmed by grep, and the circularity of the
+  real-spectrum route was confirmed in Schweighofer's source. Scratch prototypes of Lemma T (95 lines) and of the
+  monic form through Mathlib's `varChange` (12 lines) compile. Corrections: (1) R2's comparison with route 1 was
+  written before R1 finished and is out of date — its "primary route" becomes the fallback; (2) the change of
+  coordinates is needed for Theorem C as formulated, not shown to be needed by every Thom-type route; (3) the effort
+  is more likely 1100–1600 lines than 900–1400 (no unit XL). The auditor's own recommendation is route 1, with
+  route 2 as documented fallback (budget about 1300 lines).
+
+Both audits therefore support the recommendation of §1.
+
+## 6a. Outcome of Phase 3b
+
+Route 1 was implemented as planned (units P3-a, P3-b, P3-c, each audited ACCEPT): 523 lines of Lean in
+`Semialgebraic/Finiteness/` and `Semialgebraic/Interface/Finiteness.lean`. The interface theorem
+`Semialgebraic.Interface.exists_eq_iUnion_iInter_nonneg` depends on `[propext, Classical.choice, Quot.sound]` only,
+and `SemialgebraicCheck/A2.lean` inhabits the verbatim copy of `HasFinitenessTheorem` with no glue.
 
 ## 7. Risk assessment
 

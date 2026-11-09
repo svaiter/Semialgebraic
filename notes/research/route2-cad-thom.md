@@ -32,9 +32,11 @@ these pins; the names of §7.3 were also resolved by `lake env lean` on a scratc
 4. **What TauCeti contributes**: sign normal form, Tarski–Seidenberg (`HasSemialgebraicProjections ℝ`, itself proved
    through CAD), `IsSemialgebraic.closure`. Its CAD cells, delineations, Thom encodings and dimension theory are
    *not* used. Missing and to be written: Lemma T, Theorem C, bookkeeping for finite unions of basic closed sets.
-5. **Cost**: about 1000–1300 lines of Lean in 10 units, largest unit L (§8). Independent of G1–G4.
-6. **A change of coordinates is unavoidable for Theorem C** (counterexamples E2, E5) but costs about 100 lines
-   because the finiteness theorem is invariant under polynomial automorphisms and Mathlib has the automorphism.
+5. **Cost**: about 1100 lines of Lean (range 900–1400) in 5 units, largest unit L (§8). Independent of G1–G4.
+6. **A change of coordinates is needed for Theorem C**: its monicity hypothesis cannot be dropped (counterexamples
+   E2, E5) and is a property of each polynomial, so it cannot be reached by enlarging the family. It costs about
+   100 lines, because the finiteness theorem is invariant under polynomial automorphisms and Mathlib has the
+   automorphism.
 7. Other routes (§9): the literal CAD-cell route (true statement exists, XL, not recommended); Łojasiewicz
    (PLAN §4.4; viable, studied by R1); real spectrum (circular in the source checked, or needs transfer to real closed
    extensions: not viable); induction on dimension (no complete argument known to me; TauCeti lacks
@@ -154,8 +156,8 @@ in the fibre variable is still not enough for `closure A = Ā`; here `π(A) = {y
 
 `G` is closed under `∂_t` up to zero. With `u = xt`: `1 - u + u²/3 > 0` and `1 - (2/3)u + u²/6 > 0` for all `u`
 (discriminants `1 - 4/3`, `4/9 - 2/3`). For `ε = (1,1,1,1,1,1)`:
-`A = {x > 0, t ≠ 0, t > 0, xt ≠ 1, x(xt - 1) > 0} = {x > 0, t > 1/x}`, which is closed in `ℝ²` and misses `{x = 0}`.
-But at `x = 0` the relaxed conditions read `t² ≥ 0, 2t ≥ 0, 2 ≥ 0, 0 ≥ 0, 0 ≥ 0, 0 ≥ 0`, so
+`A = {x > 0, t ≠ 0, t > 0, xt ≠ 1, x(xt - 1) > 0} = {x > 0, t > 1/x}`, whose closure `{x > 0, t ≥ 1/x}` misses
+`{x = 0}`. But at `x = 0` the relaxed conditions read `t² ≥ 0, 2t ≥ 0, 2 ≥ 0, 0 ≥ 0, 0 ≥ 0, 0 ≥ 0`, so
 `Ā ∩ {x = 0} = {t ≥ 0}`, and `0 ∈ closure π(A) = [0, ∞)`. Theorem C's formula fails. Here `g(0, t) = t²` is not
 nullified, but its degree drops, so its higher `t`-derivatives are nullified and the roots `1/x` escape to infinity.
 
@@ -233,8 +235,11 @@ Where each hypothesis is used: (D) and nonvanishing of fibres in Lemma T; (M) fo
   the practical way to guarantee them at unknown points `p'` is (M).
 * Without the factor `π⁻¹(closure π(A))`: E4.
 * Without (D): E1.
-* (M) cannot be obtained in given coordinates (E2: `xt` is not `t`-monic and no enlargement of the family repairs the
-  nullification). It is obtained after an automorphism of the polynomial ring:
+* (M) is a property of each member, so it cannot be reached by enlarging the family in the given coordinates
+  (`xt` is not `t`-monic). In E2 the *conclusion* "closure = relaxed" can be restored by adding `t` to the family
+  (`{xt, x, t}` has cells determined by the signs of `x` and `t`), but E3 shows that adding even all partial
+  derivatives does not restore it in general. I did not investigate whether some other device could replace the
+  change of coordinates; with it, (M) is obtained after an automorphism of the polynomial ring:
   - *linear*: for nonzero `f_1, …, f_m` of total degrees `d_i` with top homogeneous parts `f_i^{top}`, the
     polynomial `c ↦ ∏_i f_i^{top}(1, c)` is nonzero (dehomogenization is injective on homogeneous polynomials of a
     fixed degree), so some `c ∈ ℝ^n` makes all of them nonzero, and `f_i(t, x' + c t)` has `t`-degree `d_i` with
@@ -247,8 +252,8 @@ Where each hypothesis is used: (D) and nonvanishing of fibres in Lemma T; (M) fo
     unit is a unit).
 * The finiteness theorem and "closure = relaxed" statements are invariant under polynomial automorphisms `e`: with
   `φ_e(x) := (eval x (e X_i))_i` one has `eval x (e p) = eval (φ_e x) p`, `φ_e` is continuous and
-  `φ_e ∘ φ_{e⁻¹} = id`. So the change of coordinates is unavoidable for Theorem C but costs only the transport
-  lemma M2 of §8 (about 100 lines with M1).
+  `φ_e ∘ φ_{e⁻¹} = id`. So the change of coordinates costs only the transport lemma M2 of §8 (about 100 lines with
+  M1).
 
 A heuristic numerical test of the formula on random `t`-monic families in two variables (300 random `g` of degree
 2 to 4 in `t`, 7 base points each) found no violation; the same harness reports violations for non-monic families.
@@ -358,7 +363,8 @@ Ingredients of the recommended route that TauCeti **has**:
 **Missing in TauCeti and to be written**: Lemma T; the uniform root bound; Theorem C; the monic normal form of a
 family; all bookkeeping for finite unions of basic closed sets; the theorem itself.
 
-Other directories read and found irrelevant to every route considered: `Stack/*` (stacks, delineations, analytic
+Other directories inspected (module docstrings and all declaration signatures; proofs only where quoted above) and
+found irrelevant to every route considered: `Stack/*` (stacks, delineations, analytic
 delineability, Puiseux, discriminant order), `Projection/*` (Collins, McCallum, Lazard projections),
 `CAD/{Partition,Restrict,Projection}.lean`, `Semialgebraic/{Components,Connected,LocallyConnected,Local}.lean`
 (finitely many connected components, local versions), `Semialgebraic/{Function,Image,Derivative,RootCount,
@@ -621,9 +627,11 @@ of a CAD, with closure equal to the relaxed condition and equal to a union of ce
 one would have to redo the induction of `exists_isCAD_signInvariant` with a stronger invariant: families that are
 monic, `∂_t`-closed and closed under the Collins projection; cells equal to sign conditions (via
 `Delineation.mk_mem_sectionSet_iff_of_sign_eval_eq` and `mk_mem_sectorSet_iff_of_sign_eval_eq`); closure of each
-cell. None of this is exposed by `IsCAD`, which hides the delineations behind an existential. Estimate: XL
-(1500–3000 lines), with real risk in the interaction with TauCeti's private projection machinery. §6 obtains the
-frontier condition without CAD cells, and §5 obtains the target without either. **Not recommended.**
+cell (which needs continuous extension of the root functions to the closure of the base cell). None of this is
+exposed by `IsCAD`, which hides the delineations behind an existential. I did not write out that proof; my rough
+guess is XL (1500–3000 lines), with real risk in the interaction with TauCeti's projection and delineation
+internals. §6 obtains the frontier condition without CAD cells, and §5 obtains the target without either.
+**Not recommended.**
 
 ### 9.2 Łojasiewicz route (PLAN §4.4; outline only, R1 studies it)
 
@@ -656,10 +664,11 @@ Chain: real spectrum `Sper ℝ[x]`; constructible topology is compact; `S ↦ S�
 topology; then `S̃` is a union of basic open constructible sets, finitely many by compactness. In the one source I
 could read (Schweighofer, Theorem `finthmabstract` and Remark `finthmabstractmotivates` in §6.3), the implication
 "`S` open ⇒ `S̃` open" is **derived from** the finiteness theorem, so that presentation is circular for our purpose.
-A non-circular proof needs the characterization of open constructible sets by stability under generization, plus
-transfer of openness to real closed extension fields (Tarski–Seidenberg over arbitrary real closed fields and
-convex valuation rings). TauCeti has no real spectrum of a ring, and `HasSemialgebraicProjections` has an instance
-only for `ℝ`. **Not viable** (XL several times over).
+As far as I remember (not checked against a source, see §11), a non-circular proof needs the characterization of
+open constructible sets by stability under generization, plus transfer of openness to real closed extension fields
+(Tarski–Seidenberg over arbitrary real closed fields and convex valuation rings). Whatever the exact chain, its
+prerequisites are absent: TauCeti has no real spectrum of a ring, and `HasSemialgebraicProjections` has an instance
+only for `ℝ`. **Not viable** at the present state of the libraries.
 
 ### 9.4 Induction on dimension with `dim (closure S \ S) < dim S`
 
@@ -673,9 +682,10 @@ not. In addition TauCeti has `semialgebraicDim (closure s) = semialgebraicDim s`
 
 ### 9.5 Separation of closed semialgebraic sets
 
-Separating a basic set from the complement of an open set by a polynomial inequality is the content of L2 (§9.2);
-separation of two disjoint closed semialgebraic sets by a single polynomial is false in general and by Nash
-functions is a deeper theorem. No independent route.
+The separation statement that the finiteness theorem needs (a sign cell contained in an open semialgebraic set `U`
+lies in a basic open subset of `U`) is L2 of §9.2. I know of no separation theorem that is both sufficient and
+easier to prove than L2 or Theorem C, and I did not investigate general separation theorems for closed
+semialgebraic sets. No independent route.
 
 ## 10. Recommendation
 
@@ -708,3 +718,11 @@ functions is a deeper theorem. No independent route.
    investigated; it is irrelevant to the recommended route.
 7. Section 9.2's comparison uses only the outline of PLAN §4.4; no claim is made about the correctness or the size
    of that route.
+8. Section 9.3: the description of a non-circular real-spectrum proof is from memory; only the circularity of
+   Schweighofer's presentation was checked in the source. Section 9.1: the cost of the CAD-cell version is a guess,
+   and the statement of the textbook generalized Thom lemma is quoted from memory (§6 proves the part of it that
+   does not involve connectedness).
+9. The search and test scripts were run in a temporary scratch directory and are not part of the repository. The
+   search: random `g ∈ ℤ[x, y]` of degree ≤ 3, the family of all its nonzero partial derivatives, exact sign vectors
+   on the grid `(½ℤ)² ∩ [-6, 6]²`, then for each realized sign vector the grid points that satisfy the relaxed
+   condition and have no cell point in shrinking neighbourhoods. Its only role was to suggest E3.

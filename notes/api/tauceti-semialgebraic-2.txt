@@ -1,0 +1,418 @@
+
+===== TauCeti/Geometry/RealAlgebraic/Semialgebraic/AlgebraicDependence.lean =====
+theorem IsSemialgebraic.exists_ne_zero_polynomial_of_interior_eq_empty {σ : Type*}
+    {s : Set (σ → ℝ)} (hs : IsSemialgebraic s) (hint : interior s = ∅) :
+    ∃ p : MvPolynomial σ ℝ, p ≠ 0 ∧ ∀ x ∈ s, eval x p = 0
+
+===== TauCeti/Geometry/RealAlgebraic/Semialgebraic/Function.lean =====
+def IsSemialgebraicOn (f : (σ → R) → (τ → R)) (s : Set (σ → R)) : Prop
+def IsSemialgebraicMap (f : (σ → R) → (τ → R)) : Prop
+theorem isSemialgebraicOn_univ {f : (σ → R) → (τ → R)} :
+    IsSemialgebraicOn f univ ↔ IsSemialgebraicMap f
+theorem isSemialgebraicOn_def {f : (σ → R) → (τ → R)} {s : Set (σ → R)} :
+    IsSemialgebraicOn f s ↔ IsSemialgebraic s ∧
+      IsSemialgebraic (Equiv.sumArrowEquivProdArrow σ τ R ⁻¹' s.graphOn f)
+theorem isSemialgebraicMap_def {f : (σ → R) → (τ → R)} :
+    IsSemialgebraicMap f ↔
+      IsSemialgebraic (Equiv.sumArrowEquivProdArrow σ τ R ⁻¹' univ.graphOn f)
+theorem mem_preimage_sumArrowEquivProdArrow_graphOn {f : (σ → R) → (τ → R)} {s : Set (σ → R)}
+    {z : σ ⊕ τ → R} :
+    z ∈ Equiv.sumArrowEquivProdArrow σ τ R ⁻¹' s.graphOn f ↔
+      z ∘ Sum.inl ∈ s ∧ f (z ∘ Sum.inl) = z ∘ Sum.inr
+theorem mem_preimage_sumArrowEquivProdArrow_scalar_graphOn {f : (σ → R) → R}
+    {s : Set (σ → R)} {z : σ ⊕ Unit → R} :
+    z ∈ Equiv.sumArrowEquivProdArrow σ Unit R ⁻¹' s.graphOn (fun x _ ↦ f x) ↔
+      z ∘ Sum.inl ∈ s ∧ f (z ∘ Sum.inl) = z (Sum.inr ())
+theorem IsSemialgebraicOn.isSemialgebraic {f : (σ → R) → (τ → R)} {s : Set (σ → R)}
+    (hf : IsSemialgebraicOn f s) : IsSemialgebraic s
+theorem IsSemialgebraicOn.graph {f : (σ → R) → (τ → R)} {s : Set (σ → R)}
+    (hf : IsSemialgebraicOn f s) :
+    IsSemialgebraic (Equiv.sumArrowEquivProdArrow σ τ R ⁻¹' s.graphOn f)
+theorem IsSemialgebraicOn.mono {f : (σ → R) → (τ → R)} {s t : Set (σ → R)}
+    (hf : IsSemialgebraicOn f s) (ht : IsSemialgebraic t) (h : t ⊆ s) :
+    IsSemialgebraicOn f t
+theorem IsSemialgebraicMap.isSemialgebraicOn {f : (σ → R) → (τ → R)}
+    (hf : IsSemialgebraicMap f) {s : Set (σ → R)} (hs : IsSemialgebraic s) :
+    IsSemialgebraicOn f s
+theorem IsSemialgebraicOn.congr {f g : (σ → R) → (τ → R)} {s : Set (σ → R)}
+    (hf : IsSemialgebraicOn f s) (h : s.EqOn f g) : IsSemialgebraicOn g s
+theorem isSemialgebraicOn_empty (f : (σ → R) → (τ → R)) :
+    IsSemialgebraicOn f ∅
+theorem IsSemialgebraicOn.glue {f g h : (σ → R) → (τ → R)} {s t : Set (σ → R)}
+    (hf : IsSemialgebraicOn f (s ∩ t)) (hg : IsSemialgebraicOn g (s \ t))
+    (hft : (s ∩ t).EqOn h f) (hgt : (s \ t).EqOn h g) : IsSemialgebraicOn h s
+theorem isSemialgebraicOn_of_forall_eq_iff {ι : Type*} [Finite ι] {f : (σ → R) → (τ → R)}
+    {s : Set (σ → R)} (hs : IsSemialgebraic s) (p : ι → MvPolynomial (σ ⊕ τ) R)
+    (hp : ∀ x ∈ s, ∀ y, f x = y ↔ ∀ k, eval (Sum.elim x y) (p k) = 0) :
+    IsSemialgebraicOn f s
+theorem isSemialgebraicOn_eval [Finite τ] (p : τ → MvPolynomial σ R)
+    {s : Set (σ → R)} (hs : IsSemialgebraic s) :
+    IsSemialgebraicOn (fun x i => eval x (p i)) s
+theorem isSemialgebraicMap_eval [Finite τ] (p : τ → MvPolynomial σ R) :
+    IsSemialgebraicMap (fun x i => eval x (p i))
+theorem isSemialgebraicOn_const [Finite τ] (c : τ → R) {s : Set (σ → R)}
+    (hs : IsSemialgebraic s) : IsSemialgebraicOn (fun _ => c) s
+theorem isSemialgebraicMap_const [Finite τ] (c : τ → R) :
+    IsSemialgebraicMap (fun _ : σ → R => c)
+theorem isSemialgebraicMap_id [Finite σ] :
+    IsSemialgebraicMap (id : (σ → R) → (σ → R))
+theorem IsSemialgebraicOn.sumElim {f : (σ → R) → (τ → R)} {g : (σ → R) → (τ' → R)}
+    {s : Set (σ → R)} (hf : IsSemialgebraicOn f s) (hg : IsSemialgebraicOn g s) :
+    IsSemialgebraicOn (fun x => Sum.elim (f x) (g x)) s
+theorem IsSemialgebraicMap.sumElim {f : (σ → R) → (τ → R)} {g : (σ → R) → (τ' → R)}
+    (hf : IsSemialgebraicMap f) (hg : IsSemialgebraicMap g) :
+    IsSemialgebraicMap fun x => Sum.elim (f x) (g x)
+theorem IsSemialgebraicOn.pi [Finite τ] {f : (σ → R) → (τ → R)} {s : Set (σ → R)}
+    (hs : IsSemialgebraic s) (hf : ∀ i, IsSemialgebraicOn (fun x (_ : Unit) => f x i) s) :
+    IsSemialgebraicOn f s
+theorem IsSemialgebraicOn.comp_eval {f : (σ → R) → (τ → R)} {s : Set (σ → R)}
+    (hf : IsSemialgebraicOn f s) (p : σ → MvPolynomial σ' R) :
+    IsSemialgebraicOn (f ∘ fun x i => eval x (p i)) ((fun x i => eval x (p i)) ⁻¹' s)
+theorem IsSemialgebraicMap.comp_eval {f : (σ → R) → (τ → R)} (hf : IsSemialgebraicMap f)
+    (p : σ → MvPolynomial σ' R) : IsSemialgebraicMap (f ∘ fun x i => eval x (p i))
+theorem IsSemialgebraicOn.neg {f : (σ → R) → (τ → R)} {s : Set (σ → R)}
+    (hf : IsSemialgebraicOn f s) : IsSemialgebraicOn (-f) s
+theorem IsSemialgebraicMap.neg {f : (σ → R) → (τ → R)} (hf : IsSemialgebraicMap f) :
+    IsSemialgebraicMap (-f)
+theorem isSemialgebraicOn_preimage_comp_equiv_iff {f : (σ → R) → (τ → R)} {s : Set (σ → R)}
+    (e : σ ≃ σ') :
+    IsSemialgebraicOn (fun x : σ' → R => f (x ∘ e)) ((fun x : σ' → R => x ∘ e) ⁻¹' s) ↔
+      IsSemialgebraicOn f s
+private theorem IsSemialgebraicOn.comp_equiv {f : (σ → R) → (τ → R)} {s : Set (σ → R)}
+    (hf : IsSemialgebraicOn f s) (e : τ' ≃ τ) : IsSemialgebraicOn (fun x => f x ∘ e) s
+theorem isSemialgebraicOn_comp_equiv_iff {f : (σ → R) → (τ → R)} {s : Set (σ → R)}
+    (e : τ' ≃ τ) :
+    IsSemialgebraicOn (fun x => f x ∘ e) s ↔ IsSemialgebraicOn f s
+
+===== TauCeti/Geometry/RealAlgebraic/Semialgebraic/FamilyRoots.lean =====
+theorem IsSemialgebraic.setOf_mem_biUnion_roots_card_lt {S : Set (Fin n → R)}
+    (hS : IsSemialgebraic S) (s : Finset ι) (P : ι → (MvPolynomial (Fin n) R)[X])
+    (hP : ∀ k ∈ s, ∀ x ∈ S, (P k).map (MvPolynomial.eval x) ≠ 0) (i : ℕ) :
+    IsSemialgebraic {y : Fin (n + 1) → R | Fin.tail y ∈ S ∧
+      y 0 ∈ s.biUnion (fun k ↦ ((P k).map (MvPolynomial.eval (Fin.tail y))).roots.toFinset) ∧
+      {r ∈ s.biUnion (fun k ↦ ((P k).map (MvPolynomial.eval (Fin.tail y))).roots.toFinset) |
+        r < y 0}.card = i}
+theorem IsSemialgebraic.setOf_not_mem_biUnion_roots_card_lt {S : Set (Fin n → R)}
+    (hS : IsSemialgebraic S) (s : Finset ι) (P : ι → (MvPolynomial (Fin n) R)[X])
+    (hP : ∀ k ∈ s, ∀ x ∈ S, (P k).map (MvPolynomial.eval x) ≠ 0) (j : ℕ) :
+    IsSemialgebraic {y : Fin (n + 1) → R | Fin.tail y ∈ S ∧
+      y 0 ∉ s.biUnion (fun k ↦ ((P k).map (MvPolynomial.eval (Fin.tail y))).roots.toFinset) ∧
+      {r ∈ s.biUnion (fun k ↦ ((P k).map (MvPolynomial.eval (Fin.tail y))).roots.toFinset) |
+        r < y 0}.card = j}
+
+===== TauCeti/Geometry/RealAlgebraic/Semialgebraic/RootCount.lean =====
+theorem isSemialgebraic_setOf_map_eval_eq_zero (P : (MvPolynomial σ R)[X]) :
+    IsSemialgebraic {x : σ → R | P.map (MvPolynomial.eval x) = 0}
+theorem isSemialgebraic_setOf_natDegree_map_eval_le (P : (MvPolynomial σ R)[X]) (d : ℕ) :
+    IsSemialgebraic {x : σ → R | (P.map (MvPolynomial.eval x)).natDegree ≤ d}
+theorem isSemialgebraic_setOf_natDegree_map_eval_eq (P : (MvPolynomial σ R)[X]) (d : ℕ) :
+    IsSemialgebraic {x : σ → R | (P.map (MvPolynomial.eval x)).natDegree = d}
+theorem isSemialgebraic_setOf_card_roots_map_eval (P : (MvPolynomial σ R)[X]) (k : ℕ) :
+    IsSemialgebraic {x : σ → R | (P.map (MvPolynomial.eval x)).roots.toFinset.card = k}
+theorem isSemialgebraic_setOf_card_roots_map_eval_lt (P : (MvPolynomial σ R)[X])
+    (T : MvPolynomial σ R) (k : ℕ) :
+    IsSemialgebraic
+      {x : σ → R | {r ∈ (P.map (MvPolynomial.eval x)).roots.toFinset |
+        r < MvPolynomial.eval x T}.card = k}
+theorem isSemialgebraic_setOf_mem_roots_card_roots_lt_and_eval_eq
+    (P : (MvPolynomial σ R)[X]) (T : MvPolynomial σ R) (i : ℕ) :
+    IsSemialgebraic {x : σ → R | ∃ r ∈ (P.map (MvPolynomial.eval x)).roots.toFinset,
+      {z ∈ (P.map (MvPolynomial.eval x)).roots.toFinset | z < r}.card = i ∧
+        MvPolynomial.eval x T = r}
+theorem isSemialgebraic_setOf_isRoot_card_roots_lt (P : (MvPolynomial (Fin n) R)[X]) (i : ℕ) :
+    IsSemialgebraic {y : Fin (n + 1) → R | (P.map (MvPolynomial.eval (Fin.tail y))).IsRoot (y 0) ∧
+      {r ∈ (P.map (MvPolynomial.eval (Fin.tail y))).roots.toFinset | r < y 0}.card = i}
+theorem isSemialgebraic_setOf_not_isRoot_card_roots_lt (P : (MvPolynomial (Fin n) R)[X])
+    (j : ℕ) :
+    IsSemialgebraic {y : Fin (n + 1) → R |
+      ¬ (P.map (MvPolynomial.eval (Fin.tail y))).IsRoot (y 0) ∧
+      {r ∈ (P.map (MvPolynomial.eval (Fin.tail y))).roots.toFinset | r < y 0}.card = j}
+
+===== TauCeti/Geometry/RealAlgebraic/Semialgebraic/Formula.lean =====
+theorem isSemialgebraic_setOf_realize {φ : (Language.ring.sum Language.order).BoundedFormula α n}
+    (hφ : φ.IsQF) :
+    IsSemialgebraic {x : α ⊕ Fin n → R | φ.Realize (x ∘ Sum.inl) (x ∘ Sum.inr)}
+theorem isSemialgebraic_setOf_formula_realize
+    {φ : (Language.ring.sum Language.order).Formula α} (hφ : φ.IsQF) :
+    IsSemialgebraic {v : α → R | φ.Realize v}
+theorem isSemialgebraic_iff_exists_isQF {s : Set (σ → R)} :
+    IsSemialgebraic s ↔ ∃ φ : (Language.ring.sum Language.order).Formula (R ⊕ σ),
+      φ.IsQF ∧ s = {v | φ.Realize (Sum.elim id v)}
+theorem IsSemialgebraic.definable {s : Set (σ → R)} (hs : IsSemialgebraic s) :
+    (Set.univ : Set R).Definable (Language.ring.sum Language.order) s
+
+===== TauCeti/Geometry/RealAlgebraic/Semialgebraic/Local.lean =====
+instance, the set of integer points of the real line is locally semialgebraic but, having infinitely
+many connected components, it is not semialgebraic.
+def SemialgebraicAt (s : Set (σ → ℝ)) (x : σ → ℝ) : Prop
+theorem semialgebraicAt_def {s : Set (σ → ℝ)} {x : σ → ℝ} :
+    SemialgebraicAt s x ↔ ∃ U, IsOpen U ∧ x ∈ U ∧ IsSemialgebraic U ∧ IsSemialgebraic (s ∩ U)
+theorem SemialgebraicAt.exists_subset [Finite σ] (hs : SemialgebraicAt s x) (hV : V ∈ 𝓝 x) :
+    ∃ U, IsOpen U ∧ x ∈ U ∧ U ⊆ V ∧ IsSemialgebraic U ∧ IsSemialgebraic (s ∩ U)
+theorem semialgebraicAt_iff_exists_ball [Fintype σ] :
+    SemialgebraicAt s x ↔ ∃ ε > 0, IsSemialgebraic (s ∩ ball x ε)
+theorem SemialgebraicAt.congr [Finite σ] (hs : SemialgebraicAt s x) (h : s =ᶠ[𝓝 x] s') :
+    SemialgebraicAt s' x
+theorem semialgebraicAt_congr [Finite σ] (h : s =ᶠ[𝓝 x] s') :
+    SemialgebraicAt s x ↔ SemialgebraicAt s' x
+theorem IsSemialgebraic.semialgebraicAt (hs : IsSemialgebraic s) (x : σ → ℝ) :
+    SemialgebraicAt s x
+theorem isSetAlgebra_setOf_semialgebraicAt :
+    IsSetAlgebra {s : Set (σ → ℝ) | SemialgebraicAt s x}
+theorem semialgebraicAt_empty : SemialgebraicAt (∅ : Set (σ → ℝ)) x
+theorem semialgebraicAt_univ : SemialgebraicAt (univ : Set (σ → ℝ)) x
+theorem SemialgebraicAt.compl (hs : SemialgebraicAt s x) : SemialgebraicAt sᶜ x
+theorem semialgebraicAt_compl_iff : SemialgebraicAt sᶜ x ↔ SemialgebraicAt s x
+theorem SemialgebraicAt.union (hs : SemialgebraicAt s x) (hs' : SemialgebraicAt s' x) :
+    SemialgebraicAt (s ∪ s') x
+theorem SemialgebraicAt.inter (hs : SemialgebraicAt s x) (hs' : SemialgebraicAt s' x) :
+    SemialgebraicAt (s ∩ s') x
+theorem SemialgebraicAt.sdiff (hs : SemialgebraicAt s x) (hs' : SemialgebraicAt s' x) :
+    SemialgebraicAt (s \ s') x
+theorem SemialgebraicAt.biUnion {ι : Type*} {I : Set ι} (hI : I.Finite) {s : ι → Set (σ → ℝ)}
+    (hs : ∀ i ∈ I, SemialgebraicAt (s i) x) : SemialgebraicAt (⋃ i ∈ I, s i) x
+theorem SemialgebraicAt.biInter {ι : Type*} {I : Set ι} (hI : I.Finite) {s : ι → Set (σ → ℝ)}
+    (hs : ∀ i ∈ I, SemialgebraicAt (s i) x) : SemialgebraicAt (⋂ i ∈ I, s i) x
+theorem SemialgebraicAt.iUnion {ι : Type*} [Finite ι] {s : ι → Set (σ → ℝ)}
+    (hs : ∀ i, SemialgebraicAt (s i) x) : SemialgebraicAt (⋃ i, s i) x
+theorem SemialgebraicAt.iInter {ι : Type*} [Finite ι] {s : ι → Set (σ → ℝ)}
+    (hs : ∀ i, SemialgebraicAt (s i) x) : SemialgebraicAt (⋂ i, s i) x
+theorem SemialgebraicAt.closure [Finite σ] (hs : SemialgebraicAt s x) :
+    SemialgebraicAt (_root_.closure s) x
+theorem SemialgebraicAt.interior [Finite σ] (hs : SemialgebraicAt s x) :
+    SemialgebraicAt (_root_.interior s) x
+theorem SemialgebraicAt.frontier [Finite σ] (hs : SemialgebraicAt s x) :
+    SemialgebraicAt (_root_.frontier s) x
+theorem SemialgebraicAt.preimage_eval {s : Set (τ → ℝ)} (f : τ → MvPolynomial σ ℝ)
+    (hs : SemialgebraicAt s fun i => eval x (f i)) :
+    SemialgebraicAt ((fun y i => eval y (f i)) ⁻¹' s) x
+theorem SemialgebraicAt.semianalyticAt [Fintype σ] (hs : SemialgebraicAt s x) :
+    SemianalyticAt s x
+def IsLocallySemialgebraic (s : Set (σ → ℝ)) : Prop
+theorem isLocallySemialgebraic_iff {s : Set (σ → ℝ)} :
+    IsLocallySemialgebraic s ↔ ∀ x, SemialgebraicAt s x
+theorem IsLocallySemialgebraic.semialgebraicAt {s : Set (σ → ℝ)} (hs : IsLocallySemialgebraic s)
+    (x : σ → ℝ) : SemialgebraicAt s x
+theorem IsSemialgebraic.isLocallySemialgebraic {s : Set (σ → ℝ)} (hs : IsSemialgebraic s) :
+    IsLocallySemialgebraic s
+theorem isSetAlgebra_setOf_isLocallySemialgebraic :
+    IsSetAlgebra {s : Set (σ → ℝ) | IsLocallySemialgebraic s}
+theorem isLocallySemialgebraic_empty : IsLocallySemialgebraic (∅ : Set (σ → ℝ))
+theorem isLocallySemialgebraic_univ : IsLocallySemialgebraic (univ : Set (σ → ℝ))
+theorem isLocallySemialgebraic_compl_iff {s : Set (σ → ℝ)} :
+    IsLocallySemialgebraic sᶜ ↔ IsLocallySemialgebraic s
+protected theorem compl (hs : IsLocallySemialgebraic s) : IsLocallySemialgebraic sᶜ
+protected theorem union (hs : IsLocallySemialgebraic s) (hs' : IsLocallySemialgebraic s') :
+    IsLocallySemialgebraic (s ∪ s')
+protected theorem inter (hs : IsLocallySemialgebraic s) (hs' : IsLocallySemialgebraic s') :
+    IsLocallySemialgebraic (s ∩ s')
+protected theorem sdiff (hs : IsLocallySemialgebraic s) (hs' : IsLocallySemialgebraic s') :
+    IsLocallySemialgebraic (s \ s')
+protected theorem biUnion {ι : Type*} {I : Set ι} (hI : I.Finite) {s : ι → Set (σ → ℝ)}
+    (hs : ∀ i ∈ I, IsLocallySemialgebraic (s i)) : IsLocallySemialgebraic (⋃ i ∈ I, s i)
+protected theorem biInter {ι : Type*} {I : Set ι} (hI : I.Finite) {s : ι → Set (σ → ℝ)}
+    (hs : ∀ i ∈ I, IsLocallySemialgebraic (s i)) : IsLocallySemialgebraic (⋂ i ∈ I, s i)
+protected theorem iUnion {ι : Type*} [Finite ι] {s : ι → Set (σ → ℝ)}
+    (hs : ∀ i, IsLocallySemialgebraic (s i)) : IsLocallySemialgebraic (⋃ i, s i)
+protected theorem iInter {ι : Type*} [Finite ι] {s : ι → Set (σ → ℝ)}
+    (hs : ∀ i, IsLocallySemialgebraic (s i)) : IsLocallySemialgebraic (⋂ i, s i)
+protected theorem closure [Finite σ] (hs : IsLocallySemialgebraic s) :
+    IsLocallySemialgebraic (_root_.closure s)
+protected theorem interior [Finite σ] (hs : IsLocallySemialgebraic s) :
+    IsLocallySemialgebraic (_root_.interior s)
+protected theorem frontier [Finite σ] (hs : IsLocallySemialgebraic s) :
+    IsLocallySemialgebraic (_root_.frontier s)
+protected theorem preimage_eval {s : Set (τ → ℝ)} (hs : IsLocallySemialgebraic s)
+    (f : τ → MvPolynomial σ ℝ) : IsLocallySemialgebraic ((fun y i => eval y (f i)) ⁻¹' s)
+protected theorem isSemianalytic [Fintype σ] (hs : IsLocallySemialgebraic s) : IsSemianalytic s
+theorem _root_.LocallyFinite.isLocallySemialgebraic_iUnion [Finite σ] {ι : Type*}
+    {s : ι → Set (σ → ℝ)} (hfin : LocallyFinite s) (hs : ∀ i, IsLocallySemialgebraic (s i)) :
+    IsLocallySemialgebraic (⋃ i, s i)
+theorem _root_.IsCompact.exists_isSemialgebraic_inter {s K : Set (σ → ℝ)} (hK : IsCompact K)
+    (hs : ∀ x ∈ K, SemialgebraicAt s x) :
+    ∃ U, IsOpen U ∧ K ⊆ U ∧ IsSemialgebraic U ∧ IsSemialgebraic (s ∩ U)
+theorem isSemialgebraic_of_isBounded [Finite σ] {s : Set (σ → ℝ)} (hb : Bornology.IsBounded s)
+    (hs : ∀ x ∈ closure s, SemialgebraicAt s x) : IsSemialgebraic s
+theorem IsLocallySemialgebraic.isSemialgebraic_of_isBounded [Finite σ] {s : Set (σ → ℝ)}
+    (hs : IsLocallySemialgebraic s) (hb : Bornology.IsBounded s) : IsSemialgebraic s
+theorem _root_.Bornology.IsBounded.isSemialgebraic_iff [Finite σ] {s : Set (σ → ℝ)}
+    (hb : Bornology.IsBounded s) : IsSemialgebraic s ↔ IsLocallySemialgebraic s
+
+===== TauCeti/Geometry/RealAlgebraic/Semialgebraic/Thom.lean =====
+theorem isSemialgebraic_setOf_mem_roots_derivative_signs_eq_and_eval_eq
+    (P : (MvPolynomial σ R)[X]) (T : MvPolynomial σ R) (τ : Fin P.natDegree → SignType) :
+    IsSemialgebraic {x : σ → R | ∃ r ∈ (P.map (MvPolynomial.eval x)).roots.toFinset,
+      (∀ j : Fin P.natDegree,
+        SignType.sign (((derivative^[j.val + 1] P).map
+          (MvPolynomial.eval x)).eval r) = τ j) ∧
+        MvPolynomial.eval x T = r}
+private theorem tarskiQuery_map_eval_eq_integralNormalization {P : (MvPolynomial σ R)[X]}
+    (Q : (MvPolynomial σ R)[X]) {x : σ → R} {d : ℕ} (hx : P.map (MvPolynomial.eval x) ≠ 0)
+    (hd : (P.map (MvPolynomial.eval x)).natDegree = d) :
+    tarskiQuery (P.map (MvPolynomial.eval x)) (Q.map (MvPolynomial.eval x)) =
+      tarskiQuery ((P.reductum (d + 1)).integralNormalization.map (MvPolynomial.eval x))
+        ((C ((P.reductum (d + 1)).leadingCoeff ^ Q.natDegree) *
+          Q.scaleRoots (P.reductum (d + 1)).leadingCoeff).map (MvPolynomial.eval x))
+private theorem isSemialgebraic_setOf_tarskiQuery_map_eval_eq_of_monic
+    (P Q : (MvPolynomial σ R)[X]) (hP : P.Monic) (c : ℤ) :
+    IsSemialgebraic {x : σ → R |
+      tarskiQuery (P.map (MvPolynomial.eval x)) (Q.map (MvPolynomial.eval x)) = c}
+theorem isSemialgebraic_setOf_tarskiQuery_map_eval_eq (P Q : (MvPolynomial σ R)[X]) (c : ℤ) :
+    IsSemialgebraic {x : σ → R |
+      tarskiQuery (P.map (MvPolynomial.eval x)) (Q.map (MvPolynomial.eval x)) = c}
+theorem isSemialgebraic_setOf_tarskiQuery_map_eval
+    {ι : Type*} [Finite ι] (P : (MvPolynomial σ R)[X])
+    (Q : ι → (MvPolynomial σ R)[X]) (Φ : (ι → ℤ) → Prop) :
+    IsSemialgebraic {x : σ → R |
+      Φ fun i => tarskiQuery (P.map (MvPolynomial.eval x)) (Q i |>.map (MvPolynomial.eval x))}
+private theorem fullInverse_mulVec_tarskiQuery_derivative_eq_one_iff
+    (P : (MvPolynomial σ R)[X]) (x : σ → R) (τ : Fin P.natDegree → SignType) :
+    (SignDetermination.fullInverse (Fin P.natDegree) *ᵥ
+      fun e : Fin P.natDegree → Fin 3 =>
+        (tarskiQuery (P.map (MvPolynomial.eval x))
+          ((∏ j : Fin P.natDegree, (derivative^[j.val + 1] P) ^ (e j).val).map
+            (MvPolynomial.eval x)) : ℚ)) τ = 1 ↔
+      ∃ r ∈ (P.map (MvPolynomial.eval x)).roots.toFinset,
+        ∀ j : Fin P.natDegree,
+          SignType.sign (((derivative^[j.val + 1] P).map
+            (MvPolynomial.eval x)).eval r) = τ j
+theorem isSemialgebraic_setOf_exists_root_derivative_signs_eq
+    (P : (MvPolynomial σ R)[X]) (τ : Fin P.natDegree → SignType) :
+    IsSemialgebraic {x : σ → R | ∃ r : R,
+      (P.map (MvPolynomial.eval x)).eval r = 0 ∧
+        ∀ j : Fin P.natDegree,
+          SignType.sign (((derivative^[j.val + 1] P).map
+            (MvPolynomial.eval x)).eval r) = τ j}
+private theorem eq_of_mem_roots_derivative_signs_eq {P : (MvPolynomial σ R)[X]} {x : σ → R}
+    {τ : Fin P.natDegree → SignType} {r r' : R}
+    (hr : r ∈ (P.map (MvPolynomial.eval x)).roots.toFinset)
+    (hr' : r' ∈ (P.map (MvPolynomial.eval x)).roots.toFinset)
+    (hτ : ∀ j : Fin P.natDegree,
+      SignType.sign (((derivative^[j.val + 1] P).map (MvPolynomial.eval x)).eval r) = τ j)
+    (hτ' : ∀ j : Fin P.natDegree,
+      SignType.sign (((derivative^[j.val + 1] P).map (MvPolynomial.eval x)).eval r') = τ j) :
+    r = r'
+private theorem isSemialgebraic_setOf_mem_roots_derivative_signs_eq_and
+    (P : (MvPolynomial σ R)[X]) (T : MvPolynomial σ R) (τ : Fin P.natDegree → SignType)
+    (Φ : R → R → Prop)
+    (Ψ : (Fin (P.natDegree + 1) → SignType) → (Fin P.natDegree → SignType) → Prop)
+    (hiff : ∀ {p : R[X]}, p.natDegree ≤ P.natDegree → p ≠ 0 → ∀ {a b : R},
+      p.eval b = 0 → (Φ a b ↔ Ψ (fun i => derivativeSign p a i.val)
+        (fun j => derivativeSign p b (j.val + 1)))) :
+    IsSemialgebraic {x : σ → R | ∃ r ∈ (P.map (MvPolynomial.eval x)).roots.toFinset,
+      (∀ j : Fin P.natDegree,
+        SignType.sign (((derivative^[j.val + 1] P).map
+          (MvPolynomial.eval x)).eval r) = τ j) ∧ Φ (MvPolynomial.eval x T) r}
+theorem isSemialgebraic_setOf_mem_roots_derivative_signs_eq_and_eval_lt
+    (P : (MvPolynomial σ R)[X]) (T : MvPolynomial σ R) (τ : Fin P.natDegree → SignType) :
+    IsSemialgebraic {x : σ → R | ∃ r ∈ (P.map (MvPolynomial.eval x)).roots.toFinset,
+      (∀ j : Fin P.natDegree,
+        SignType.sign (((derivative^[j.val + 1] P).map
+          (MvPolynomial.eval x)).eval r) = τ j) ∧
+        MvPolynomial.eval x T < r}
+theorem isSemialgebraic_setOf_mem_roots_derivative_signs_eq_and_lt_eval
+    (P : (MvPolynomial σ R)[X]) (T : MvPolynomial σ R) (τ : Fin P.natDegree → SignType) :
+    IsSemialgebraic {x : σ → R | ∃ r ∈ (P.map (MvPolynomial.eval x)).roots.toFinset,
+      (∀ j : Fin P.natDegree,
+        SignType.sign (((derivative^[j.val + 1] P).map
+          (MvPolynomial.eval x)).eval r) = τ j) ∧
+        r < MvPolynomial.eval x T}
+theorem isSemialgebraic_setOf_mem_roots_derivative_signs_eq_and_card_roots_lt
+    (P : (MvPolynomial σ R)[X]) (τ : Fin P.natDegree → SignType) (i : ℕ) :
+    IsSemialgebraic {x : σ → R | ∃ r ∈ (P.map (MvPolynomial.eval x)).roots.toFinset,
+      (∀ j : Fin P.natDegree,
+        SignType.sign (((derivative^[j.val + 1] P).map
+          (MvPolynomial.eval x)).eval r) = τ j) ∧
+        {z ∈ (P.map (MvPolynomial.eval x)).roots.toFinset | z < r}.card = i}
+private theorem isSemialgebraic_setOf_mem_roots_card_roots_lt_and
+    (P : (MvPolynomial σ R)[X]) (i : ℕ) (Φ : (σ → R) → R → Prop)
+    (hΦ : ∀ τ : Fin P.natDegree → SignType,
+      IsSemialgebraic {x : σ → R | ∃ r ∈ (P.map (MvPolynomial.eval x)).roots.toFinset,
+        (∀ j : Fin P.natDegree,
+          SignType.sign (((derivative^[j.val + 1] P).map
+            (MvPolynomial.eval x)).eval r) = τ j) ∧ Φ x r}) :
+    IsSemialgebraic {x : σ → R | ∃ r ∈ (P.map (MvPolynomial.eval x)).roots.toFinset,
+      {z ∈ (P.map (MvPolynomial.eval x)).roots.toFinset | z < r}.card = i ∧ Φ x r}
+theorem isSemialgebraic_setOf_mem_roots_card_roots_lt_and_eval_lt
+    (P : (MvPolynomial σ R)[X]) (T : MvPolynomial σ R) (i : ℕ) :
+    IsSemialgebraic {x : σ → R | ∃ r ∈ (P.map (MvPolynomial.eval x)).roots.toFinset,
+      {z ∈ (P.map (MvPolynomial.eval x)).roots.toFinset | z < r}.card = i ∧
+        MvPolynomial.eval x T < r}
+theorem isSemialgebraic_setOf_mem_roots_card_roots_lt_and_lt_eval
+    (P : (MvPolynomial σ R)[X]) (T : MvPolynomial σ R) (i : ℕ) :
+    IsSemialgebraic {x : σ → R | ∃ r ∈ (P.map (MvPolynomial.eval x)).roots.toFinset,
+      {z ∈ (P.map (MvPolynomial.eval x)).roots.toFinset | z < r}.card = i ∧
+        r < MvPolynomial.eval x T}
+theorem isSemialgebraic_setOf_lt_root_card_roots_lt
+    (P : (MvPolynomial (Fin n) R)[X]) (i : ℕ) :
+    IsSemialgebraic {y : Fin (n + 1) → R |
+      ∃ r ∈ (P.map (MvPolynomial.eval (Fin.tail y))).roots.toFinset,
+        {z ∈ (P.map (MvPolynomial.eval (Fin.tail y))).roots.toFinset | z < r}.card = i ∧
+          y 0 < r}
+theorem isSemialgebraic_setOf_gt_root_card_roots_lt
+    (P : (MvPolynomial (Fin n) R)[X]) (i : ℕ) :
+    IsSemialgebraic {y : Fin (n + 1) → R |
+      ∃ r ∈ (P.map (MvPolynomial.eval (Fin.tail y))).roots.toFinset,
+        {z ∈ (P.map (MvPolynomial.eval (Fin.tail y))).roots.toFinset | z < r}.card = i ∧
+          r < y 0}
+
+===== TauCeti/Geometry/RealAlgebraic/Semialgebraic/SharedRoots.lean =====
+theorem isSemialgebraic_setOf_mem_biUnion_roots_map_eval
+    (F : Finset (MvPolynomial σ R)[X]) (T : MvPolynomial σ R) :
+    IsSemialgebraic {x : σ → R |
+      MvPolynomial.eval x T ∈ F.biUnion fun P => (P.map (MvPolynomial.eval x)).roots.toFinset}
+private theorem isSemialgebraic_setOf_biUnion_roots_map_eval
+    (F : Finset (MvPolynomial σ R)[X]) (φ : (σ → R) → Finset R → Prop)
+    (hφ : ∀ Q : (MvPolynomial σ R)[X],
+      IsSemialgebraic {x | φ x (Q.map (MvPolynomial.eval x)).roots.toFinset}) :
+    IsSemialgebraic {x | φ x (F.biUnion fun P =>
+      (P.map (MvPolynomial.eval x)).roots.toFinset)}
+theorem isSemialgebraic_setOf_card_biUnion_roots_map_eval
+    (F : Finset (MvPolynomial σ R)[X]) (k : ℕ) :
+    IsSemialgebraic {x : σ → R |
+      (F.biUnion fun P => (P.map (MvPolynomial.eval x)).roots.toFinset).card = k}
+theorem isSemialgebraic_setOf_card_biUnion_roots_map_eval_lt
+    (F : Finset (MvPolynomial σ R)[X]) (T : MvPolynomial σ R) (k : ℕ) :
+    IsSemialgebraic {x : σ → R |
+      {r ∈ F.biUnion (fun P => (P.map (MvPolynomial.eval x)).roots.toFinset) |
+        r < MvPolynomial.eval x T}.card = k}
+theorem isSemialgebraic_setOf_mem_biUnion_roots_card_lt
+    (F : Finset (MvPolynomial (Fin n) R)[X]) (i : ℕ) :
+    IsSemialgebraic {y : Fin (n + 1) → R |
+      y 0 ∈ F.biUnion (fun P => (P.map (MvPolynomial.eval (Fin.tail y))).roots.toFinset) ∧
+      {r ∈ F.biUnion (fun P => (P.map (MvPolynomial.eval (Fin.tail y))).roots.toFinset) |
+        r < y 0}.card = i}
+theorem isSemialgebraic_setOf_notMem_biUnion_roots_card_lt
+    (F : Finset (MvPolynomial (Fin n) R)[X]) (j : ℕ) :
+    IsSemialgebraic {y : Fin (n + 1) → R |
+      y 0 ∉ F.biUnion (fun P => (P.map (MvPolynomial.eval (Fin.tail y))).roots.toFinset) ∧
+      {r ∈ F.biUnion (fun P => (P.map (MvPolynomial.eval (Fin.tail y))).roots.toFinset) |
+        r < y 0}.card = j}
+
+===== TauCeti/Geometry/RealAlgebraic/Semialgebraic/Derivative.lean =====
+private theorem isSemialgebraic_setOf_derivative_estimate_of_matrix (v : σ → ℝ)
+    {R : Set ((((σ ⊕ Unit) ⊕ Unit) ⊕ Unit) ⊕ Fin 3 → ℝ)} (hR : IsSemialgebraic R)
+    (hRdef : ∀ z, z ∈ R ↔
+      (0 < z (.inr 0) ∧ z (.inr 0) < z (.inl (.inr ())) ∧
+        (fun i ↦ z (.inl (.inl (.inl (.inl i))))) ∈ s ∧
+        f (fun i ↦ z (.inl (.inl (.inl (.inl i))))) = z (.inr 1) ∧
+        (fun i ↦ z (.inl (.inl (.inl (.inl i)))) + z (.inr 0) * v i) ∈ s ∧
+        f (fun i ↦ z (.inl (.inl (.inl (.inl i)))) + z (.inr 0) * v i) = z (.inr 2)) →
+      -z (.inl (.inl (.inr ()))) * z (.inr 0) <
+          z (.inr 2) - z (.inr 1) - z (.inr 0) * z (.inl (.inl (.inl (.inr ())))) ∧
+        z (.inr 2) - z (.inr 1) - z (.inr 0) * z (.inl (.inl (.inl (.inr ())))) <
+          z (.inl (.inl (.inr ()))) * z (.inr 0)) :
+    IsSemialgebraic {z : σ ⊕ Unit → ℝ | ∀ ε > (0 : ℝ), ∃ δ > (0 : ℝ),
+      ∀ t a b : ℝ, 0 < t → t < δ → z ∘ Sum.inl ∈ s → f (z ∘ Sum.inl) = a →
+        (z ∘ Sum.inl) + t • v ∈ s → f ((z ∘ Sum.inl) + t • v) = b →
+          -ε * t < b - a - t * z (.inr ()) ∧ b - a - t * z (.inr ()) < ε * t}
+private theorem isSemialgebraic_setOf_derivative_estimate
+    (hf : IsSemialgebraicOn (fun x (_ : Unit) ↦ f x) s) (v : σ → ℝ) :
+    IsSemialgebraic {z : σ ⊕ Unit → ℝ | ∀ ε > (0 : ℝ), ∃ δ > (0 : ℝ),
+      ∀ t a b : ℝ, 0 < t → t < δ → z ∘ Sum.inl ∈ s → f (z ∘ Sum.inl) = a →
+        (z ∘ Sum.inl) + t • v ∈ s → f ((z ∘ Sum.inl) + t • v) = b →
+          -ε * t < b - a - t * z (.inr ()) ∧ b - a - t * z (.inr ()) < ε * t}
+theorem IsSemialgebraicOn.fderiv_apply [Finite σ]
+    (hf : IsSemialgebraicOn (fun x (_ : Unit) ↦ f x) s) (hs : IsOpen s)
+    (hd : DifferentiableOn ℝ f s) (v : σ → ℝ) :
+    IsSemialgebraicOn (fun x (_ : Unit) ↦ fderiv ℝ f x v) s

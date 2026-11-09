@@ -1,0 +1,238 @@
+
+===== TauCeti/Geometry/RealAlgebraic/Semialgebraic/Basic.lean =====
+def IsSemialgebraic (s : Set (σ → R)) : Prop
+theorem isSemialgebraic_def {s : Set (σ → R)} :
+    IsSemialgebraic s ↔ s ∈ generateSetAlgebra
+      (range (fun p : MvPolynomial σ R => {x | eval x p = 0}) ∪
+        range (fun p : MvPolynomial σ R => {x | 0 < eval x p}))
+theorem isSemialgebraic_eval_eq_zero (p : MvPolynomial σ R) :
+    IsSemialgebraic {x : σ → R | eval x p = 0}
+theorem isSemialgebraic_eval_pos (p : MvPolynomial σ R) :
+    IsSemialgebraic {x : σ → R | 0 < eval x p}
+theorem isSetAlgebra_setOf_isSemialgebraic :
+    IsSetAlgebra {s : Set (σ → R) | IsSemialgebraic s}
+theorem setOf_isSemialgebraic_subset {ℬ : Set (Set (σ → R))} (hℬ : IsSetAlgebra ℬ)
+    (eq_zero : ∀ p : MvPolynomial σ R, {x | eval x p = 0} ∈ ℬ)
+    (pos : ∀ p : MvPolynomial σ R, {x | 0 < eval x p} ∈ ℬ) :
+    {s : Set (σ → R) | IsSemialgebraic s} ⊆ ℬ
+theorem IsSemialgebraic.induction {motive : Set (σ → R) → Prop}
+    (eq_zero : ∀ p : MvPolynomial σ R, motive {x | eval x p = 0})
+    (pos : ∀ p : MvPolynomial σ R, motive {x | 0 < eval x p})
+    (compl : ∀ s, IsSemialgebraic s → motive s → motive sᶜ)
+    (union : ∀ s t, IsSemialgebraic s → IsSemialgebraic t → motive s → motive t →
+      motive (s ∪ t))
+    {s : Set (σ → R)} (hs : IsSemialgebraic s) : motive s
+theorem isSemialgebraic_empty : IsSemialgebraic (∅ : Set (σ → R))
+theorem isSemialgebraic_univ : IsSemialgebraic (univ : Set (σ → R))
+theorem IsSemialgebraic.compl {s : Set (σ → R)} (hs : IsSemialgebraic s) :
+    IsSemialgebraic sᶜ
+theorem IsSemialgebraic.of_compl {s : Set (σ → R)} (hs : IsSemialgebraic sᶜ) :
+    IsSemialgebraic s
+theorem isSemialgebraic_compl_iff {s : Set (σ → R)} :
+    IsSemialgebraic sᶜ ↔ IsSemialgebraic s
+theorem IsSemialgebraic.union {s t : Set (σ → R)} (hs : IsSemialgebraic s)
+    (ht : IsSemialgebraic t) : IsSemialgebraic (s ∪ t)
+theorem IsSemialgebraic.inter {s t : Set (σ → R)} (hs : IsSemialgebraic s)
+    (ht : IsSemialgebraic t) : IsSemialgebraic (s ∩ t)
+theorem IsSemialgebraic.sdiff {s t : Set (σ → R)} (hs : IsSemialgebraic s)
+    (ht : IsSemialgebraic t) : IsSemialgebraic (s \ t)
+theorem IsSemialgebraic.biUnion {ι : Type*} {S : Set ι} (hS : S.Finite)
+    {s : ι → Set (σ → R)} (hs : ∀ i ∈ S, IsSemialgebraic (s i)) :
+    IsSemialgebraic (⋃ i ∈ S, s i)
+theorem IsSemialgebraic.biInter {ι : Type*} {S : Set ι} (hS : S.Finite)
+    {s : ι → Set (σ → R)} (hs : ∀ i ∈ S, IsSemialgebraic (s i)) :
+    IsSemialgebraic (⋂ i ∈ S, s i)
+theorem IsSemialgebraic.iUnion {ι : Type*} [Finite ι] {s : ι → Set (σ → R)}
+    (hs : ∀ i, IsSemialgebraic (s i)) : IsSemialgebraic (⋃ i, s i)
+theorem IsSemialgebraic.iInter {ι : Type*} [Finite ι] {s : ι → Set (σ → R)}
+    (hs : ∀ i, IsSemialgebraic (s i)) : IsSemialgebraic (⋂ i, s i)
+theorem isSemialgebraic_eval_ne_zero (p : MvPolynomial σ R) :
+    IsSemialgebraic {x : σ → R | eval x p ≠ 0}
+theorem isSemialgebraic_eval_eq (p q : MvPolynomial σ R) :
+    IsSemialgebraic {x : σ → R | eval x p = eval x q}
+theorem isSemialgebraic_eval_nonpos (p : MvPolynomial σ R) :
+    IsSemialgebraic {x : σ → R | eval x p ≤ 0}
+theorem isSemialgebraic_eval_neg (p : MvPolynomial σ R) :
+    IsSemialgebraic {x : σ → R | eval x p < 0}
+theorem isSemialgebraic_eval_nonneg (p : MvPolynomial σ R) :
+    IsSemialgebraic {x : σ → R | 0 ≤ eval x p}
+theorem isSemialgebraic_eval_lt [IsOrderedAddMonoid R] (p q : MvPolynomial σ R) :
+    IsSemialgebraic {x : σ → R | eval x p < eval x q}
+theorem isSemialgebraic_eval_le [IsOrderedAddMonoid R] (p q : MvPolynomial σ R) :
+    IsSemialgebraic {x : σ → R | eval x p ≤ eval x q}
+theorem isSemialgebraic_sign_eval_eq (p : MvPolynomial σ R) (ε : SignType) :
+    IsSemialgebraic {x : σ → R | SignType.sign (eval x p) = ε}
+theorem isSemialgebraic_setOf_sign_eval {ι : Type*} [Finite ι] (p : ι → MvPolynomial σ R)
+    (Φ : (ι → SignType) → Prop) :
+    IsSemialgebraic {x : σ → R | Φ fun i => SignType.sign (eval x (p i))}
+theorem isSemialgebraic_setOf_permanencesMinusVariations_eval
+    (l : List (MvPolynomial σ R)) (c : ℤ) :
+    IsSemialgebraic {x : σ → R | (l.map (eval x)).permanencesMinusVariations = c}
+theorem isSemialgebraic_setOf_forall_coeff_eq_zero (P : Polynomial (MvPolynomial σ R))
+    (s : Set ℕ) :
+    IsSemialgebraic {x : σ → R | ∀ n ∈ s, eval x (P.coeff n) = 0}
+theorem isSemialgebraic_singleton [Finite σ] (a : σ → R) :
+    IsSemialgebraic ({a} : Set (σ → R))
+theorem _root_.Set.Finite.isSemialgebraic [Finite σ] {s : Set (σ → R)} (hs : s.Finite) :
+    IsSemialgebraic s
+theorem IsSemialgebraic.preimage_eval {s : Set (τ → R)} (hs : IsSemialgebraic s)
+    (f : τ → MvPolynomial σ R) :
+    IsSemialgebraic ((fun x i => eval x (f i)) ⁻¹' s)
+theorem IsSemialgebraic.preimage_comp {s : Set (τ → R)} (hs : IsSemialgebraic s) (f : τ → σ) :
+    IsSemialgebraic ((fun x : σ → R => x ∘ f) ⁻¹' s)
+theorem isSemialgebraic_preimage_comp_equiv {s : Set (τ → R)} (e : τ ≃ σ) :
+    IsSemialgebraic ((fun x : σ → R => x ∘ e) ⁻¹' s) ↔ IsSemialgebraic s
+theorem IsSemialgebraic.preimage_sumArrowEquivProdArrow_prod {s : Set (σ → R)}
+    {t : Set (τ → R)} (hs : IsSemialgebraic s) (ht : IsSemialgebraic t) :
+    IsSemialgebraic (Equiv.sumArrowEquivProdArrow σ τ R ⁻¹' s ×ˢ t)
+theorem IsSemialgebraic.image_appendEquiv_prod {m n : ℕ} {s : Set (Fin m → R)}
+    {t : Set (Fin n → R)} (hs : IsSemialgebraic s) (ht : IsSemialgebraic t) :
+    IsSemialgebraic (Fin.appendEquiv m n '' s ×ˢ t)
+theorem IsSemialgebraic.preimage_tail {n : ℕ} {s : Set (Fin n → R)} (hs : IsSemialgebraic s) :
+    IsSemialgebraic (Fin.tail ⁻¹' s : Set (Fin (n + 1) → R))
+theorem IsSemialgebraic.preimage_cons_left {n : ℕ} {s : Set (Fin (n + 1) → R)}
+    (hs : IsSemialgebraic s) (t : R) :
+    IsSemialgebraic {x : Fin n → R | Fin.cons t x ∈ s}
+theorem IsSemialgebraic.preimage_cons_right {n : ℕ} {s : Set (Fin (n + 1) → R)}
+    (hs : IsSemialgebraic s) (x : Fin n → R) :
+    IsSemialgebraic {y : Fin 1 → R | Fin.cons (y 0) x ∈ s}
+theorem IsSemialgebraic.exists_eq_setOf_sign_eval {s : Set (σ → R)} (hs : IsSemialgebraic s) :
+    ∃ (m : ℕ) (p : Fin m → MvPolynomial σ R) (Φ : (Fin m → SignType) → Prop),
+      s = {x | Φ fun i => SignType.sign (eval x (p i))}
+theorem IsSemialgebraic.exists_finset_mem_iff_of_eqOn {s : Set (σ → R)} (hs : IsSemialgebraic s) :
+    ∃ F : Finset σ, ∀ x y : σ → R, EqOn x y F → (x ∈ s ↔ y ∈ s)
+class HasSemialgebraicProjections : Prop
+
+===== TauCeti/Geometry/RealAlgebraic/Semialgebraic/Image.lean =====
+instance proved in `TauCeti.Geometry.RealAlgebraic.CAD.Existence`, so every result below holds
+over `ℝ` unconditionally. This file develops the parts of the theory of semialgebraic sets and
+functions that need projection.
+theorem IsSemialgebraic.image_comp_inr [Finite σ] {s : Set (σ ⊕ τ → R)}
+    (hs : IsSemialgebraic s) :
+    IsSemialgebraic ((fun z : σ ⊕ τ → R => z ∘ Sum.inr) '' s)
+theorem IsSemialgebraic.image_comp_inl [Finite τ] {s : Set (σ ⊕ τ → R)}
+    (hs : IsSemialgebraic s) :
+    IsSemialgebraic ((fun z : σ ⊕ τ → R => z ∘ Sum.inl) '' s)
+theorem IsSemialgebraic.setOf_exists_sumElim [Finite τ] {s : Set (σ ⊕ τ → R)}
+    (hs : IsSemialgebraic s) :
+    IsSemialgebraic {x : σ → R | ∃ y : τ → R, Sum.elim x y ∈ s}
+theorem IsSemialgebraic.setOf_forall_sumElim [Finite τ] {s : Set (σ ⊕ τ → R)}
+    (hs : IsSemialgebraic s) :
+    IsSemialgebraic {x : σ → R | ∀ y : τ → R, Sum.elim x y ∈ s}
+theorem IsSemialgebraicOn.isSemialgebraic_image [Finite σ] {f : (σ → R) → (τ → R)}
+    {s : Set (σ → R)} (hf : IsSemialgebraicOn f s) : IsSemialgebraic (f '' s)
+theorem IsSemialgebraicMap.isSemialgebraic_image [Finite σ] {f : (σ → R) → (τ → R)}
+    (hf : IsSemialgebraicMap f) {s : Set (σ → R)} (hs : IsSemialgebraic s) :
+    IsSemialgebraic (f '' s)
+theorem IsSemialgebraic.image_eval [Finite σ] [Finite τ] {s : Set (σ → R)}
+    (hs : IsSemialgebraic s) (p : τ → MvPolynomial σ R) :
+    IsSemialgebraic ((fun x i => eval x (p i)) '' s)
+theorem IsSemialgebraic.image_comp [Finite σ] [Finite τ] {s : Set (σ → R)}
+    (hs : IsSemialgebraic s) (f : τ → σ) :
+    IsSemialgebraic ((fun x : σ → R => x ∘ f) '' s)
+theorem IsSemialgebraicOn.isSemialgebraic_inter_preimage [Finite τ] {f : (σ → R) → (τ → R)}
+    {s : Set (σ → R)} (hf : IsSemialgebraicOn f s) {t : Set (τ → R)} (ht : IsSemialgebraic t) :
+    IsSemialgebraic (s ∩ f ⁻¹' t)
+theorem IsSemialgebraicMap.isSemialgebraic_preimage [Finite τ] {f : (σ → R) → (τ → R)}
+    (hf : IsSemialgebraicMap f) {t : Set (τ → R)} (ht : IsSemialgebraic t) :
+    IsSemialgebraic (f ⁻¹' t)
+theorem isSemialgebraicOn_iff_graph [Finite τ] {f : (σ → R) → (τ → R)} {s : Set (σ → R)} :
+    IsSemialgebraicOn f s ↔
+      IsSemialgebraic (Equiv.sumArrowEquivProdArrow σ τ R ⁻¹' s.graphOn f)
+theorem IsSemialgebraicOn.comp [Finite τ] {g : (τ → R) → (υ → R)} {f : (σ → R) → (τ → R)}
+    {s : Set (σ → R)} {t : Set (τ → R)} (hg : IsSemialgebraicOn g t)
+    (hf : IsSemialgebraicOn f s) (hst : MapsTo f s t) : IsSemialgebraicOn (g ∘ f) s
+theorem IsSemialgebraicMap.comp [Finite τ] {g : (τ → R) → (υ → R)} {f : (σ → R) → (τ → R)}
+    (hg : IsSemialgebraicMap g) (hf : IsSemialgebraicMap f) : IsSemialgebraicMap (g ∘ f)
+theorem IsSemialgebraicOn.eval_comp [Finite τ] [Finite υ] (hf : IsSemialgebraicOn f s)
+    (p : υ → MvPolynomial τ R) :
+    IsSemialgebraicOn (fun x i => eval (f x) (p i)) s
+theorem isSemialgebraicOn_sumElim_iff [Finite τ] [Finite τ'] {g : (σ → R) → (τ' → R)} :
+    IsSemialgebraicOn (fun x => Sum.elim (f x) (g x)) s ↔
+      IsSemialgebraicOn f s ∧ IsSemialgebraicOn g s
+theorem isSemialgebraicOn_pi_iff [Finite τ] :
+    IsSemialgebraicOn f s ↔
+      IsSemialgebraic s ∧ ∀ i, IsSemialgebraicOn (fun x (_ : Unit) => f x i) s
+theorem IsSemialgebraicOn.add (hf : IsSemialgebraicOn f s) (hg : IsSemialgebraicOn g s) :
+    IsSemialgebraicOn (f + g) s
+theorem IsSemialgebraicOn.mul (hf : IsSemialgebraicOn f s) (hg : IsSemialgebraicOn g s) :
+    IsSemialgebraicOn (f * g) s
+theorem IsSemialgebraicOn.sub (hf : IsSemialgebraicOn f s) (hg : IsSemialgebraicOn g s) :
+    IsSemialgebraicOn (f - g) s
+theorem IsSemialgebraicMap.add (hf : IsSemialgebraicMap f) (hg : IsSemialgebraicMap g) :
+    IsSemialgebraicMap (f + g)
+theorem IsSemialgebraicMap.mul (hf : IsSemialgebraicMap f) (hg : IsSemialgebraicMap g) :
+    IsSemialgebraicMap (f * g)
+theorem IsSemialgebraicMap.sub (hf : IsSemialgebraicMap f) (hg : IsSemialgebraicMap g) :
+    IsSemialgebraicMap (f - g)
+theorem IsSemialgebraicOn.isSemialgebraic_inter_setOf_eq (hf : IsSemialgebraicOn f s)
+    (hg : IsSemialgebraicOn g s) : IsSemialgebraic (s ∩ {x | f x = g x})
+theorem IsSemialgebraicOn.isSemialgebraic_inter_setOf_le [IsOrderedAddMonoid R]
+    (hf : IsSemialgebraicOn f s) (hg : IsSemialgebraicOn g s) :
+    IsSemialgebraic (s ∩ {x | f x ≤ g x})
+
+===== TauCeti/Geometry/RealAlgebraic/Semialgebraic/QuantifierElimination.lean =====
+instance proved in `TauCeti.Geometry.RealAlgebraic.CAD.Existence`, so every result below holds
+over `ℝ` unconditionally. This file shows that projection closure gives quantifier elimination in
+the language of ordered rings, with parameters from `R`.
+theorem IsSemialgebraic.image_comp_some
+    {σ : Type*} {s : Set (Option σ → R)} (hs : IsSemialgebraic s) :
+    IsSemialgebraic ((fun x : Option σ → R => x ∘ some) '' s)
+private theorem TauCeti.IsSemialgebraic.setOf_exists_sumElim_snoc
+    {α : Type*} {n : ℕ} {S : Set (α ⊕ Fin (n + 1) → R)} (hS : IsSemialgebraic S) :
+    IsSemialgebraic
+      {x : α ⊕ Fin n → R | ∃ a, Sum.elim (x ∘ Sum.inl) (Fin.snoc (x ∘ Sum.inr) a) ∈ S}
+theorem isSemialgebraic_setOf_realize
+    {α : Type*} {n : ℕ} (φ : (Language.ring.sum Language.order).BoundedFormula α n) :
+    IsSemialgebraic {x : α ⊕ Fin n → R | φ.Realize (x ∘ Sum.inl) (x ∘ Sum.inr)}
+theorem FirstOrder.Language.Formula.isSemialgebraic_setOf_realize
+    {α : Type*} (φ : (Language.ring.sum Language.order).Formula α) :
+    IsSemialgebraic {v : α → R | φ.Realize v}
+theorem FirstOrder.Language.Formula.isSemialgebraic_setOf_realize_sumElim
+    {A σ : Type*} (φ : (Language.ring.sum Language.order).Formula (A ⊕ σ)) (f : A → R) :
+    IsSemialgebraic {v : σ → R | φ.Realize (Sum.elim f v)}
+theorem Set.Definable.isSemialgebraic
+    {σ : Type*} {A : Set R} {s : Set (σ → R)}
+    (hs : A.Definable (Language.ring.sum Language.order) s) : IsSemialgebraic s
+theorem isSemialgebraic_iff_definable {σ : Type*} {s : Set (σ → R)} :
+    IsSemialgebraic s ↔ (Set.univ : Set R).Definable (Language.ring.sum Language.order) s
+theorem exists_isQF_realize_iff {σ : Type*}
+    (φ : (Language.ring.sum Language.order).Formula (R ⊕ σ)) :
+    ∃ ψ : (Language.ring.sum Language.order).Formula (R ⊕ σ), ψ.IsQF ∧
+      ∀ v : σ → R, φ.Realize (Sum.elim id v) ↔ ψ.Realize (Sum.elim id v)
+theorem hasSemialgebraicProjections_iff_forall_definable_isSemialgebraic :
+    HasSemialgebraicProjections R ↔ ∀ (n : ℕ) (s : Set (Fin n → R)),
+      (Set.univ : Set R).Definable (Language.ring.sum Language.order) s → IsSemialgebraic s
+
+===== TauCeti/Geometry/RealAlgebraic/Semialgebraic/Topology.lean =====
+theorem isSemialgebraic_setOf_dist_eval_lt [Fintype σ] (p q : σ → MvPolynomial τ ℝ)
+    (r : MvPolynomial τ ℝ) :
+    IsSemialgebraic
+      {z : τ → ℝ | dist (fun i => eval z (p i)) (fun i => eval z (q i)) < eval z r}
+theorem isSemialgebraic_setOf_dist_eval_le [Fintype σ] (p q : σ → MvPolynomial τ ℝ)
+    (r : MvPolynomial τ ℝ) :
+    IsSemialgebraic
+      {z : τ → ℝ | dist (fun i => eval z (p i)) (fun i => eval z (q i)) ≤ eval z r}
+theorem isSemialgebraic_ball [Fintype σ] (x : σ → ℝ) (r : ℝ) :
+    IsSemialgebraic (Metric.ball x r)
+theorem isSemialgebraic_closedBall [Fintype σ] (x : σ → ℝ) (r : ℝ) :
+    IsSemialgebraic (Metric.closedBall x r)
+theorem isSemialgebraic_preimage_toLp_ball [Fintype σ] (x : EuclideanSpace ℝ σ) (r : ℝ) :
+    IsSemialgebraic (WithLp.toLp 2 ⁻¹' Metric.ball x r : Set (σ → ℝ))
+theorem isSemialgebraic_preimage_toLp_closedBall [Fintype σ] (x : EuclideanSpace ℝ σ) (r : ℝ) :
+    IsSemialgebraic (WithLp.toLp 2 ⁻¹' Metric.closedBall x r : Set (σ → ℝ))
+theorem IsSemialgebraic.closure [Finite σ] {s : Set (σ → ℝ)} (hs : IsSemialgebraic s) :
+    IsSemialgebraic (closure s)
+theorem IsSemialgebraic.interior [Finite σ] {s : Set (σ → ℝ)} (hs : IsSemialgebraic s) :
+    IsSemialgebraic (interior s)
+theorem IsSemialgebraic.frontier [Finite σ] {s : Set (σ → ℝ)} (hs : IsSemialgebraic s) :
+    IsSemialgebraic (frontier s)
+theorem IsSemialgebraic.setOf_mem_interior_fiber [Finite τ]
+    {s : Set (σ ⊕ τ → ℝ)} (hs : IsSemialgebraic s) :
+    IsSemialgebraic {z : σ ⊕ τ → ℝ |
+      z ∘ Sum.inr ∈ _root_.interior {y : τ → ℝ | Sum.elim (z ∘ Sum.inl) y ∈ s}}
+theorem IsSemialgebraic.setOf_fiber_interior_nonempty [Finite τ]
+    {s : Set (σ ⊕ τ → ℝ)} (hs : IsSemialgebraic s) :
+    IsSemialgebraic {x : σ → ℝ | (_root_.interior {y : τ → ℝ | Sum.elim x y ∈ s}).Nonempty}
+theorem IsSemialgebraic.isNowhereDense_iff {n : ℕ} {s : Set (Fin n → ℝ)} (hs : IsSemialgebraic s) :
+    IsNowhereDense s ↔ _root_.interior s = ∅

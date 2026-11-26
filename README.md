@@ -1,33 +1,63 @@
 # Semialgebraic
 
-A Lean 4 companion library to [TauCeti](https://github.com/TauCetiProject/TauCeti)'s real algebraic geometry.
-Its purpose is to prove, over `ℝ` and in TauCeti's vocabulary (`TauCeti.IsSemialgebraic`), the three facts that
-[`HardnessBilevelProgramming`](https://github.com/svaiter/HardnessBilevelProgramming) takes as hypotheses:
+Semialgebraic is a Lean 4 library for real semialgebraic geometry. It formalizes the
+finiteness theorem for open and closed semialgebraic sets, a weighted Łojasiewicz
+inequality, and polynomial growth bounds. The statements use
+`TauCeti.IsSemialgebraic` from [TauCeti](https://github.com/TauCetiProject/TauCeti).
 
-| id | fact | interface theorem (namespace `Semialgebraic.Interface`) | status |
-|---|---|---|---|
-| A1 | Tarski–Seidenberg, projection form | `image_comp_inl` (`Semialgebraic/Interface/Projection.lean`) | done (from TauCeti's CAD) |
-| A2 | finiteness theorem for closed semialgebraic sets | `exists_eq_iUnion_iInter_nonneg` (`Semialgebraic/Interface/Finiteness.lean`) | done |
-| A3 | polynomial growth of locally bounded semialgebraic functions | `growth` (`Semialgebraic/Interface/Growth.lean`) | done |
+## Main results
 
-Beyond the interface theorems, the library provides general statements: the finiteness theorem for open and closed
-semialgebraic sets (`Semialgebraic.exists_eq_iUnion_iInter_pos`, `Semialgebraic.exists_eq_iUnion_iInter_nonneg`), a
-Łojasiewicz inequality with polynomial weight on closed semialgebraic sets (`Semialgebraic.exists_lojasiewicz`), and
-polynomial growth of semialgebraic functions and of fibrewise suprema (`Semialgebraic.exists_polynomial_growth`,
-`Semialgebraic.exists_growth_isLUB`).
+| Result | Statement | Lean theorem |
+| --- | --- | --- |
+| Finiteness theorem | Every open semialgebraic subset of a finite-dimensional real coordinate space is a finite union of sets defined by finitely many strict polynomial inequalities. For closed semialgebraic sets, the inequalities are weak. | [`Semialgebraic.exists_eq_iUnion_iInter_pos` and `Semialgebraic.exists_eq_iUnion_iInter_nonneg`](Semialgebraic/Finiteness/Main.lean) |
+| Weighted Łojasiewicz inequality | On a closed semialgebraic set, if the zero set of a polynomial `f` is contained in that of `g`, an even power of `g` is bounded by `f²` times a polynomial weight. | [`Semialgebraic.exists_lojasiewicz`](Semialgebraic/Finiteness/Lojasiewicz.lean) |
+| Polynomial growth | A real-valued function with a semialgebraic graph that is bounded on bounded sets admits a global bound of the form `abs (f x) ≤ B + (1 + ∑ i, x i ^ 2) ^ M` for some real `B` and natural `M`. | [`Semialgebraic.exists_polynomial_growth`](Semialgebraic/Growth/Main.lean) |
+| Fibrewise least upper bounds | The graph of the least upper bound of a semialgebraic family of real sets is semialgebraic where the least upper bound exists. For a single real parameter, its magnitude grows at most polynomially as the parameter tends to positive infinity. | [`Semialgebraic.isSemialgebraic_setOf_isLUB`](Semialgebraic/Growth/IsLUB.lean) and [`Semialgebraic.exists_growth_isLUB`](Semialgebraic/Growth/Main.lean) |
 
-The plan and its status are in `PLAN.md`; the choice of proof route for the finiteness theorem is documented in
-`notes/finiteness-report.md`; `notes/upstream-proposal.md` lists what could be offered to TauCeti.
+The finiteness proof first derives the weighted Łojasiewicz inequality using
+polynomial growth of fibrewise least upper bounds. It then uses that inequality
+to enlarge each sign cell inside an open semialgebraic set to a set defined by
+strict polynomial inequalities. The closed case follows by taking complements.
 
-## Pins
+## Using the library
 
-Lean `leanprover/lean4:v4.36.0-rc2`, TauCeti `2c9b12be`, Mathlib `1b1ccf4b` (the commit of TauCeti's manifest).
+Import the main module to access the results.
 
-## Building
+```lean
+import Semialgebraic
+
+#check Semialgebraic.exists_eq_iUnion_iInter_nonneg
+#check Semialgebraic.exists_lojasiewicz
+#check Semialgebraic.exists_polynomial_growth
+```
+
+- [`Semialgebraic/Finiteness/`](Semialgebraic/Finiteness) contains the open and closed finiteness theorems, the Łojasiewicz inequality, and the sign-cell lemmas.
+- [`Semialgebraic/Growth/`](Semialgebraic/Growth) contains the growth bounds and the semialgebraicity of fibrewise least upper bounds.
+- [`Semialgebraic/Interface/`](Semialgebraic/Interface) provides the projection, closed finiteness, and growth theorems in the form used by [HardnessBilevelProgramming](https://github.com/svaiter/HardnessBilevelProgramming). The projection theorem comes from TauCeti’s cylindrical algebraic decomposition. [`SemialgebraicCheck/`](SemialgebraicCheck) checks these interfaces against copies of the downstream assumption classes.
+
+## Building and checking
+
+From the repository root, with Bash, Git, and Lean’s toolchain manager
+[Elan](https://github.com/leanprover/elan) installed, run:
 
 ```bash
-scripts/setup.sh      # once: Mathlib oleans, and the mappings of TauCeti's olean cache
-. scripts/env.sh      # in every shell: lets Lake fetch TauCeti modules instead of compiling them
-lake build
-scripts/check.sh      # build + forbidden-token scan + #print axioms of the interface theorems
+bash scripts/setup.sh
+bash scripts/check.sh
 ```
+
+Setup fetches the Mathlib cache and the mappings for TauCeti’s build cache.
+The check script builds the library and the interface checks, scans for proof
+placeholders and other forbidden declarations, and verifies that the three
+interface theorems depend only on `propext`, `Classical.choice`, and `Quot.sound`.
+
+For a library-only build, run `bash -c 'source scripts/env.sh && lake build'`
+from the repository root after setup.
+
+The checked-in toolchain and dependency files pin Lean to `v4.36.0-rc2`,
+TauCeti to `2c9b12be`, and Mathlib to `1b1ccf4b`.
+
+## Proof notes
+
+The [finiteness report](notes/finiteness-report.md) explains the choice of proof
+and compares the approaches considered. The [project plan](PLAN.md) records the
+development history.
